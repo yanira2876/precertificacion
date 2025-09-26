@@ -1,0 +1,35 @@
+{#
+perfil.html
+Template para mostrar la información del perfil del usuario.
+Hereda de base.html para mantener el diseño y navegación.
+- Muestra nombre del usuario y total de citas publicadas.
+- Lista todas las citas del usuario con opciones de editar y borrar.
+#}
+{% extends 'base.html' %}
+{% block title %}Mi Perfil de Viajero{% endblock %}
+{% block content %}
+<h1>Perfil de {{ usuario.nombre|capitalize }}</h1>
+<div class="alert alert-primary">
+    <h4>Tu Compañero de Viaje</h4>
+    <p class="mb-1">Reflexiones compartidas en tu camino: <strong>{{ total_citas }}</strong></p>
+    <small class="text-muted">Cada reflexión es un paso más en tu crecimiento personal</small>
+</div>
+
+<h2>Mis Reflexiones Compartidas</h2>
+{% for cita in citas %}
+<div class="card mb-3">
+    <div class="card-body">
+        <p class="card-text">"{{ cita.cita }}"</p>
+        <p class="text-muted">Compartida el: {{ cita.creado_en | format_date }}</p>
+        <a href="/citas/editar/{{ cita.id }}" class="btn btn-outline-warning btn-sm">Editar</a>
+        <a href="/citas/borrar/{{ cita.id }}" class="btn btn-outline-danger btn-sm">Eliminar</a>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <h5>¡Comienza tu viaje!</h5>
+    <p>Aún no has compartido ninguna reflexión. ¿Por qué no empiezas con algo que te haya inspirado hoy?</p>
+    <a href="/citas" class="btn btn-primary">Compartir mi primera reflexión</a>
+</div>
+{% endfor %}
+{% endblock %}

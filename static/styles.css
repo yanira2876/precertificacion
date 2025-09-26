@@ -1,0 +1,55 @@
+body {
+    font-family: 'Poppins', sans-serif; /* Fuente ligera y moderna */
+    font-size: 16px;
+    color: #4B0082; /* Texto en color morado oscuro */
+    line-height: 1.5;
+    background: linear-gradient(135deg, #9370DB 0%, #E6E6FA 100%); /* Fondo con tonos morados */
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold; /* Títulos en negritas */
+    color: #6A0DAD; /* Títulos en un tono morado más oscuro */
+}
+
+.navbar {
+    background-color: #6A0DAD; /* Fondo morado oscuro para la barra de navegación */
+    color: #fff; /* Texto blanco */
+}
+
+.navbar a {
+    color: #E6E6FA; /* Enlaces en un tono lavanda */
+}
+
+.navbar a:hover {
+    color: #D8BFD8; /* Enlaces en un tono más claro al pasar el cursor */
+}
+
+footer {
+    background-color: #4B0082; /* Fondo morado oscuro para el pie de página */
+    color: #fff; /* Texto blanco */
+    text-align: center;
+    padding: 10px 0;
+}
+
+button {
+    background-color: #9370DB; /* Botones en un tono morado medio */
+    color: #fff; /* Texto blanco */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #6A0DAD; /* Botones en un tono más oscuro al pasar el cursor */
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.9); /* Fondo blanco translúcido */
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

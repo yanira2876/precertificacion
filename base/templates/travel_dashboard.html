@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% block title %}Travel Dashboard{% endblock %}
+{% block content %}
+<div class="container-fluid mt-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="row mb-3">
+        <div class="col-12">
+            {% for category, message in messages %}
+            <div class="alert alert-{% if category == 'success' %}success{% elif category == 'error' %}danger{% elif category == 'warning' %}warning{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-1">Tablero de Viajes</h1>
+            <p class="text-muted lead">
+¡Bienvenido {{ usuario.nombre|capitalize }}!</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/usuarios/logout" class="btn btn-outline-secondary">Cerrar Sesión</a>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Crear Nuevo Plan de Viaje</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/citas/crear_plan" method="POST" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="destination" class="form-label">Destino</label>
+                            <input type="text" class="form-control" name="destination" placeholder="Ej. París, Francia"
+                                required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="travel_start_date" class="form-label">Fecha Inicio</label>
+                            <input type="date" class="form-control" name="travel_start_date" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="travel_end_date" class="form-label">Fecha Fin</label>
+                            <input type="date" class="form-control" name="travel_end_date" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="plan" class="form-label">Descripción del Plan</label>
+                            <input type="text" class="form-control" name="plan" placeholder="Ej. City Tour & Museums"
+                                required>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">Crear Plan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Tus horarios de viaje</h5>
+                </div>
+                <div class="card-body">
+                    {% if trip_schedules %}
+                    <p class="text-info">Se encontraron {{ trip_schedules|length }} planes de viaje</p>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th>Travel Start Date</th>
+                                    <th>Travel End Date</th>
+                                    <th>Plan</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for plan in trip_schedules %}
+                                <tr>
+                                    <td>
+                                        <a href="/citas/descripcion/{{ plan.id }}" class="btn btn-link p-0 text-start fw-bold" 
+                                           style="border: none; background: none; color: #0d6efd; text-decoration: none;">
+                                            {{ plan.destination }}
+                                        </a>
+                                        {% if plan.autor_id != session['usuario_id'] %}
+                                        <br><small class="text-muted">Por: {{ plan.autor_nombre }} {{
+                                            plan.autor_apellido }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ plan.travel_start_date | format_travel_date }}</td>
+                                    <td>{{ plan.travel_end_date | format_travel_date }}</td>
+                                    <td>{{ plan.plan }}</td>
+                                    <td>
+                                        {% if plan.autor_id == session['usuario_id'] %}
+                                        <a href="/citas/eliminar_plan/{{ plan.id }}" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('¿Estás seguro de eliminar este plan permanentemente?')">Delete</a>
+                                        {% else %}
+                                        <a href="/citas/cancelar_participacion/{{ plan.id }}"
+                                            class="btn btn-warning btn-sm">Cancel</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <h6>
+¡Comienza tu aventura!</h6>
+                        <p class="mb-0">No tienes planes de viaje programados. Crea tu primer plan o únete a los planes
+                            de otros viajeros.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Planes de viaje de otro usuario</h5>
+                </div>
+                <div class="card-body">
+                    {% if other_travel_plans %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Travel Start Date</th>
+                                    <th>Travel End Date</th>
+                                    <th>¿Quieres Unirte?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for plan in other_travel_plans %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ plan.destination }}</strong>
+                                        <br><small class="text-muted">Por: {{ plan.autor_nombre }} {{
+                                            plan.autor_apellido }}</small>
+                                        {% if plan.description %}
+                                        <br><small class="text-info">{{ plan.description }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ plan.travel_start_date | format_travel_date }}</td>
+                                    <td>{{ plan.travel_end_date | format_travel_date }}</td>
+                                    <td>
+                                        <a href="/citas/unirse/{{ plan.id }}" class="btn btn-success btn-sm">Join</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <h6>No hay planes disponibles</h6>
+                        <p class="mb-0">Por el momento no hay planes de otros usuarios disponibles para unirse. ¡Sé el
+                            primero en crear un plan emocionante!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 0.9rem;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.5rem;
+        border-radius: 8px;
+    }
+
+    .toast {
+        min-width: 300px;
+    }
+
+    .btn-link:hover {
+        color: #0056b3 !important;
+        text-decoration: underline !important;
+    }
+</style>
+{% endblock %}
